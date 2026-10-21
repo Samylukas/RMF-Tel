@@ -118,17 +118,18 @@
             display: none;
         }
 
-        /* ==================== إعدادات الطباعة المخصصة ==================== */
+        /* ==================== إعدادات الطباعة بدون الهيدر العلوي ==================== */
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 12mm 10mm 15mm 10mm;
+                margin: 0mm 10mm 12mm 10mm; /* الهامش العلوي 0 لإخفاء هيدر المتصفح */
             }
             body {
                 background: white !important;
                 color: black !important;
                 font-size: 11pt;
                 font-family: 'Cairo', sans-serif !important;
+                padding-top: 10px !important;
             }
             #splash-screen, .controls-bar, .action-cell, .btn-icon, .modal {
                 display: none !important;
@@ -140,6 +141,7 @@
                 border-bottom: 1px solid var(--primary-blue) !important;
                 padding-bottom: 10px !important;
                 margin-bottom: 15px !important;
+                margin-top: 0 !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
@@ -196,17 +198,18 @@
                 font-family: 'Cairo', sans-serif !important;
             }
             .print-footer {
-                display: block !important;
+                display: flex !important;
+                justify-content: flex-start;
                 position: fixed;
                 bottom: 0;
-                left: 0;
                 right: 0;
-                text-align: center;
+                left: 0;
                 font-size: 9pt;
-                color: #555;
+                color: #333;
                 font-family: 'Cairo', sans-serif;
                 border-top: 1px solid #ddd;
                 padding-top: 4px;
+                direction: rtl;
             }
         }
     </style>
@@ -256,7 +259,7 @@
         </div>
     </div>
 
-    <!-- فوتر مخصص للطباعة يظهر فقط في أوراق الطباعة -->
+    <!-- فوتر للجهة اليمنى فقط يظهر التاريخ والوقت -->
     <div class="print-footer" id="print-date-footer"></div>
 
     <div class="modal" id="admin-modal">
@@ -291,7 +294,7 @@
             loadData();
         };
 
-        // دالة الطباعة مع تجهيز التاريخ بنظام 24 ساعة
+        // دالة الطباعة: توليد التاريخ والوقت بتنسيق DD/MM/YYYY HH:mm فقط بدون كلمات إضافية
         function printPage() {
             let now = new Date();
             let day = String(now.getDate()).padStart(2, '0');
@@ -301,7 +304,7 @@
             let minutes = String(now.getMinutes()).padStart(2, '0');
             
             let formattedDateTime = `${day}/${month}/${year} ${hours}:${minutes}`;
-            document.getElementById('print-date-footer').innerText = `تاريخ ووقت الطباعة: ${formattedDateTime}`;
+            document.getElementById('print-date-footer').innerText = formattedDateTime;
             window.print();
         }
 
