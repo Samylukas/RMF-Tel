@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title> </title>
+    <title>دليل هاتف مطار مرسي علم الدولي</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -54,11 +54,11 @@
             justify-content: center; 
             align-items: center; 
             background: white; 
-            padding: 15px 10px; 
+            padding: 12px 10px; 
             border-bottom: 2px solid var(--primary-blue); 
         }
         .center-logo { 
-            height: 80px; 
+            height: 70px; 
             max-width: 90%;
             object-fit: contain;
             cursor: pointer; 
@@ -66,68 +66,67 @@
             transition: transform 0.3s ease;
         }
         .sub-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             color: var(--primary-blue);
-            margin-top: 8px;
+            margin-top: 6px;
             margin-bottom: 0;
             text-align: center;
         }
 
-        .container { max-width: 1200px; margin: 15px auto; padding: 0 12px; }
+        .container { max-width: 1200px; margin: 12px auto; padding: 0 8px; }
         
-        /* جعل عناصر التحكم داينامك مع الموبايل */
+        /* عناصر التحكم */
         .controls-bar { 
             display: flex; 
             flex-direction: row; 
             justify-content: space-between; 
-            margin-bottom: 15px; 
+            margin-bottom: 12px; 
             align-items: center; 
-            gap: 10px; 
+            gap: 8px; 
         }
 
         .search-box { flex-grow: 1; position: relative; }
         .search-box input { 
             width: 100%; 
-            padding: 10px 35px 10px 35px; 
+            padding: 8px 30px 8px 30px; 
             border: 1px solid var(--primary-blue); 
-            border-radius: 8px; 
+            border-radius: 6px; 
             font-family: 'Cairo'; 
-            font-size: 15px; 
+            font-size: 13px; 
             box-sizing: border-box; 
         }
-        .search-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--primary-blue); }
-        .clear-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #999; cursor: pointer; display: none; font-size: 16px; }
+        .search-icon { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--primary-blue); font-size: 13px; }
+        .clear-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #999; cursor: pointer; display: none; font-size: 14px; }
 
         .btn { 
-            padding: 9px 15px; 
+            padding: 7px 12px; 
             border: none; 
-            border-radius: 6px; 
+            border-radius: 5px; 
             font-family: 'Cairo'; 
             font-weight: bold; 
             cursor: pointer; 
             display: flex; 
             align-items: center; 
-            gap: 6px; 
-            font-size: 14px; 
+            gap: 5px; 
+            font-size: 13px; 
             white-space: nowrap; 
         }
         .btn-print { background-color: var(--primary-blue); color: white; }
         .btn-add { background-color: var(--success-green); color: white; display: none; }
         .btn-exit-admin { background-color: var(--danger-red); color: white; display: none; }
 
-        /* حاوية الجدول المتجاوبة مع الموبايل */
+        /* تصغير خلايا الجدول واستغلال المساحات */
         .table-container { 
             background: white; 
-            border-radius: 8px; 
-            box-shadow: 0 0 10px rgba(0,0,0,0.05); 
-            overflow-x: auto; /* تمرير أفقي ناعم عند ضيق الشاشة */
+            border-radius: 6px; 
+            box-shadow: 0 0 8px rgba(0,0,0,0.05); 
+            overflow-x: auto; 
             -webkit-overflow-scrolling: touch;
         }
 
         table { 
             width: 100%; 
-            min-width: 600px; /* ضمان عرض ممتاز لجميع الأعمدة والزراير */
             border-collapse: collapse; 
             text-align: center; 
         }
@@ -135,43 +134,48 @@
         th { 
             background-color: var(--light-gray); 
             color: var(--primary-blue); 
-            padding: 12px 8px; 
-            font-size: 14px; 
+            padding: 6px 4px; 
+            font-size: 12px; 
             border: 1px solid var(--border-color); 
             font-weight: 700;
+            white-space: nowrap;
         }
+
         td { 
-            padding: 10px 8px; 
+            padding: 4px 4px; 
             border: 1px solid var(--border-color); 
-            font-size: 14px; 
+            font-size: 12px; 
             font-weight: 600; 
             color: var(--text-dark); 
+            line-height: 1.2;
         }
         
         .dept-row { 
             background-color: #F3F4F6; 
             color: var(--primary-blue); 
             font-weight: bold; 
-            font-size: 16px; 
+            font-size: 13px; 
+            padding: 5px !important;
         }
 
-        /* تنسيقات زر الاتصال والواتساب داينامك */
+        /* تصغير وإحكام أزرار الاتصال والواتساب */
         .mobile-cell {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 6px;
+            justify-content: center;
+            gap: 4px;
             direction: ltr;
         }
         
         .mobile-number-text {
             font-weight: bold;
-            font-size: 13px;
+            font-size: 11px;
+            white-space: nowrap;
         }
 
         .quick-actions {
             display: flex;
-            gap: 4px;
+            gap: 3px;
             flex-shrink: 0;
         }
 
@@ -179,37 +183,37 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 30px;
-            height: 30px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
             color: white;
             text-decoration: none;
-            font-size: 13px;
+            font-size: 10px;
         }
 
         .action-btn-call { background-color: #28A745; }
         .action-btn-wa { background-color: #25D366; }
 
-        .action-cell { display: none; width: 90px; }
-        .action-btns { display: flex; justify-content: center; gap: 4px; }
-        .btn-icon { padding: 5px 8px; border: none; border-radius: 4px; color: white; cursor: pointer; }
+        .action-cell { display: none; width: 70px; }
+        .action-btns { display: flex; justify-content: center; gap: 3px; }
+        .btn-icon { padding: 3px 6px; border: none; border-radius: 3px; color: white; cursor: pointer; font-size: 11px; }
         .btn-edit { background-color: var(--warning-yellow); color: #000; }
         .btn-delete { background-color: var(--danger-red); }
         
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; padding: 15px; }
-        .modal-content { background: white; padding: 25px; border-radius: 8px; width: 100%; max-width: 400px; }
-        .modal-content input { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: 'Cairo'; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 100%; max-width: 380px; }
+        .modal-content input { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: 'Cairo'; font-size: 13px; }
         
         #emp-mobile {
             direction: ltr !important;
             text-align: right !important;
             font-family: monospace, 'Cairo';
-            font-size: 15px;
+            font-size: 13px;
         }
 
-        .loading { text-align: center; padding: 20px; font-weight: bold; color: var(--primary-blue); }
+        .loading { text-align: center; padding: 15px; font-weight: bold; color: var(--primary-blue); font-size: 13px; }
 
-        /* الشاشات الصغرى جداً (Mobile Responsive) */
+        /* الشاشات الصغيرة جداً */
         @media (max-width: 600px) {
             .controls-bar {
                 flex-direction: column-reverse;
@@ -221,16 +225,16 @@
             }
         }
 
-        /* ==================== إعدادات الطباعة النظيفة والفوتر المفرغ ==================== */
+        /* إعدادات الطباعة */
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 15mm 10mm 15mm 10mm; /* مساحة الهامش السفلي مفرغة بدون نصوص متداخلة */
+                margin: 12mm 8mm 12mm 8mm;
             }
             body {
                 background: white !important;
                 color: black !important;
-                font-size: 11pt;
+                font-size: 10pt;
                 font-family: 'Cairo', sans-serif !important;
             }
             #splash-screen, .controls-bar, .action-cell, .btn-icon, .modal, .quick-actions {
@@ -241,39 +245,39 @@
                 flex-direction: column !important;
                 align-items: center !important;
                 border-bottom: 1px solid var(--primary-blue) !important;
-                padding-bottom: 10px !important;
-                margin-bottom: 15px !important;
+                padding-bottom: 8px !important;
+                margin-bottom: 10px !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
             .center-logo {
                 display: block !important;
-                height: 60px !important;
+                height: 50px !important;
                 margin: 0 auto !important;
             }
             .sub-title {
                 display: block !important;
-                font-size: 13pt !important;
+                font-size: 11pt !important;
                 color: var(--primary-blue) !important;
-                margin-top: 5px !important;
+                margin-top: 4px !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
             .container { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
-            table { width: 100% !important; min-width: 100% !important; border-collapse: collapse !important; }
+            table { width: 100% !important; border-collapse: collapse !important; }
             thead { display: table-header-group; }
             th {
                 background-color: var(--light-gray) !important;
                 color: var(--primary-blue) !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
-                padding: 8px !important;
-                font-size: 11pt !important;
+                padding: 5px !important;
+                font-size: 10pt !important;
                 border: 1px solid #aaa !important;
             }
             td {
-                padding: 6px 8px !important;
-                font-size: 10pt !important;
+                padding: 4px !important;
+                font-size: 9pt !important;
                 border: 1px solid #ccc !important;
             }
             tr { page-break-inside: avoid !important; break-inside: avoid !important; }
@@ -290,12 +294,12 @@
 </head>
 <body>
 
-    <!-- شاشة البداية باللوجو الأصلي -->
+    <!-- شاشة البداية -->
     <div id="splash-screen">
         <img src="Airportlogo" alt="Splash Logo" class="splash-logo">
     </div>
 
-    <!-- الهيدر والعنوان الأصلي واللوجو -->
+    <!-- الهيدر والعنوان -->
     <div class="top-header">
         <img src="Airportlogo" alt="Marsa Alam Logo" class="center-logo" id="secret-logo" title="الضغط 3 مرات للتعديل">
         <h2 class="sub-title">دليل هاتف مطار مرسي علم الدولي</h2>
@@ -318,10 +322,10 @@
             <table id="directory-table">
                 <thead>
                     <tr>
-                        <th style="width: 45px;">م</th>
+                        <th style="width: 35px;">م</th>
                         <th>الإسم</th>
                         <th>الوظيفة</th>
-                        <th>رقم أرضي</th>
+                        <th>أرضي</th>
                         <th>موبايل</th>
                         <th class="action-cell">إجراء</th>
                     </tr>
@@ -335,14 +339,14 @@
 
     <div class="modal" id="admin-modal">
         <div class="modal-content">
-            <h3 id="modal-title" style="color: var(--primary-blue); border-bottom: 1px solid #ccc; padding-bottom: 10px;">إضافة رقم جديد</h3>
+            <h3 id="modal-title" style="color: var(--primary-blue); border-bottom: 1px solid #ccc; padding-bottom: 8px; font-size: 15px; margin-top:0;">إضافة رقم جديد</h3>
             <input type="hidden" id="emp-id">
             <input type="text" id="emp-dept" placeholder="الإدارة">
             <input type="text" id="emp-name" placeholder="الإسم">
             <input type="text" id="emp-role" placeholder="الوظيفة">
             <input type="text" id="emp-ext" placeholder="الرقم الأرضي">
             <input type="text" id="emp-mobile" placeholder="الموبايل (مثال: 0100 000 0000)" oninput="formatMobileInput(this)" maxlength="13">
-            <div style="display: flex; gap: 10px;">
+            <div style="display: flex; gap: 8px;">
                 <button class="btn btn-add" style="display:block; flex: 1;" onclick="saveRecord()">حفظ</button>
                 <button class="btn btn-print" style="background:#6c757d; flex: 1;" onclick="closeModal()">إلغاء</button>
             </div>
@@ -446,8 +450,8 @@
                             <div class="mobile-cell">
                                 <span class="mobile-number-text">${emp.Mobile}</span>
                                 <div class="quick-actions">
-                                    <a href="tel:${mobileRaw}" class="action-btn-call" title="اتصال تلفوني"><i class="fas fa-phone-alt"></i></a>
-                                    <a href="https://wa.me/${waNumber}" target="_blank" class="action-btn-wa" title="مراسلة واتساب"><i class="fab fa-whatsapp"></i></a>
+                                    <a href="tel:${mobileRaw}" class="action-btn-call" title="اتصال"><i class="fas fa-phone-alt"></i></a>
+                                    <a href="https://wa.me/${waNumber}" target="_blank" class="action-btn-wa" title="واتساب"><i class="fab fa-whatsapp"></i></a>
                                 </div>
                             </div>
                         `;
