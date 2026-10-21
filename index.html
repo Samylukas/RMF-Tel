@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل هواتف المطار</title>
+    <style>
+        :root { --primary: #0056b3; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); margin: 0; padding: 20px; }
+        header { text-align: center; margin-bottom: 30px; }
+        /* اللوجو مع ميزة تغيير المؤشر للإيحاء بأنه مجرد صورة */
+        #airport-logo { font-size: 2em; color: var(--primary); font-weight: bold; cursor: default; user-select: none; }
+        table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; }
+        th, td { padding: 15px; text-align: right; border-bottom: 1px solid #ddd; }
+        th { background-color: var(--primary); color: white; }
+        tr:hover { background-color: #f1f1f1; }
+        .admin-controls { display: none; margin-top: 20px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .admin-controls input, .admin-controls button { padding: 10px; margin: 5px; border-radius: 4px; border: 1px solid #ccc; }
+        .btn-admin { background: #28a745; color: white; cursor: pointer; border: none; }
+        .btn-delete { background: #dc3545; color: white; cursor: pointer; padding: 5px 10px; border: none; border-radius: 4px; }
+        .btn-edit { background: #ffc107; color: black; cursor: pointer; padding: 5px 10px; border: none; border-radius: 4px; }
+        .action-cell { display: none; } /* مخفية للمستخدم العادي */
+    </style>
+</head>
+<body>
+
+    <header>
+        <!-- اللوجو الذي يحتوي على الخدعة المخفية -->
+        <div id="airport-logo">✈️ دليل هواتف المطار </div>
+        <p>ابحث عن أرقام الإدارات والموظفين بسرعة</p>
+    </header>
+
+    <!-- لوحة التحكم (تظهر فقط بعد إدخال الرقم السري) -->
+    <div id="admin-panel" class="admin-controls">
+        <h3>🛠️ لوحة تحكم المسؤول</h3>
+        <input type="text" id="emp-id" placeholder="ID (ex: DIR-33)">
+        <input type="text" id="emp-dept" placeholder="الإدارة">
+        <input type="text" id="emp-name" placeholder="الاسم">
+        <input type="text" id="emp-role" placeholder="الوظيفة">
+        <input type="text" id="emp-ext" placeholder="الرقم الداخلي">
+        <input type="text" id="emp-mobile" placeholder="الموبايل">
+        <button class="btn-admin" onclick="addRecord()">➕ إضافة موظف</button>
+        <button class="btn-admin" style="background:#6c757d;" onclick="closeAdmin()">إغلاق اللوحة</button>
+    </div>
+
+    <table id="directory-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>الإدارة</th>
+                <th>الاسم</th>
+                <th>الوظيفة</th>
+                <th>الداخلي</th>
+                <th>الموبايل</th>
+                <th class="action-cell">إجراءات</th>
+            </tr>
+        </thead>
+        <tbody id="table-body">
+            <tr><td colspan="7" style="text-align: center;">جاري تحميل البيانات...</td></tr>
+        </tbody>
+    </table>
+
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwb6SSVOS6nUk9sq5o7dK2QIn3sVDAXZWXt_6wpGW1tvTUYdjSUAlUm5IIqNGBFrTOZcg/exec'; // ضغ رابط الـ Web App الخاص بك هنا
+        let isAdmin = false;
+        let adminPassword = "";
+
+        // خدعة الـ 3 ضغطات على اللوجو
+        let clicks = 0;
+        let clickTimer;
+        document.getElementById('airport-logo').addEventListener('click', () => {
+            clicks++;
+            clearTimeout(clickTimer);
+            clickTimer = setTimeout(() => { clicks = 0; }, 2000); // إعادة تعيين بعد ثانيتين
+            
+            if (clicks === 3) {
+                let pwd = prompt("أدخل الرقم السري للوحة التحكم:");
+                if (pwd === "102030") {
+                    adminPassword = pwd;
+                    isAdmin = true;
+                    document.getElementById('admin-panel').style.display = 'block';
+                    enableAdminView();
+                    alert("مرحباً بك في وضع التعديل!");
+                } else {
+                    alert("رقم سري خاطئ!");
+                }
+                clicks = 0;
+            }
+        });
+
+        // جلب البيانات من Google Sheets
+        async function loadData() {
+            try {
+                let response = await fetch(API_URL);
+                let data = await response.json();
+                renderTable(data);
+            } catch (error) {
+                document.getElementById('table-body').innerHTML = '<tr><td colspan="7">حدث خطأ في تحميل البيانات.</td></tr>';
+            }
+        }
+
+        function renderTable(data) {
+            let tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            data.forEach(row => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row.ID || ''}</td>
+                    <td>${row.Department || ''}</td>
+                    <td>${row.Name || ''}</td>
+                    <td>${row.Role || ''}</td>
+                    <td>${row.Ext || ''}</td>
+                    <td>${row.Mobile || ''}</td>
+                    <td class="action-cell">
+                        <button class="btn-edit" onclick="editRecord('${row.ID}')">تعديل</button>
+                        <button class="btn-delete" onclick="deleteRecord('${row.ID}')">حذف</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            if(isAdmin) enableAdminView();
+        }
+
+        function enableAdminView() {
+            let actionCells = document.querySelectorAll('.action-cell');
+            actionCells.forEach(cell => cell.style.display = 'table-cell');
+        }
+
+        function closeAdmin() {
+            isAdmin = false;
+            document.getElementById('admin-panel').style.display = 'none';
+            let actionCells = document.querySelectorAll('.action-cell');
+            actionCells.forEach(cell => cell.style.display = 'none');
+        }
+
+        // دالة إرسال الطلبات (إضافة، تعديل، حذف)
+        async function sendRequest(payload) {
+            payload.password = adminPassword; // إرسال الباسورد مع كل طلب
+            document.getElementById('table-body').innerHTML = '<tr><td colspan="7">جاري معالجة الطلب...</td></tr>';
+            await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload),
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' } // لضمان عدم حدوث مشاكل CORS
+            });
+            loadData(); // إعادة تحميل البيانات
+        }
+
+        function addRecord() {
+            let payload = {
+                action: 'add',
+                id: document.getElementById('emp-id').value,
+                department: document.getElementById('emp-dept').value,
+                name: document.getElementById('emp-name').value,
+                role: document.getElementById('emp-role').value,
+                ext: document.getElementById('emp-ext').value,
+                mobile: document.getElementById('emp-mobile').value
+            };
+            sendRequest(payload);
+            // مسح الحقول
+            document.querySelectorAll('.admin-controls input').forEach(input => input.value = '');
+        }
+
+        function deleteRecord(id) {
+            if(confirm('هل أنت متأكد من حذف السجل رقم ' + id + '؟')) {
+                sendRequest({ action: 'delete', id: id });
+            }
+        }
+
+        function editRecord(id) {
+            alert('لقد قمت باختيار تعديل ' + id + '.. يمكنك تطوير هذه الخاصية لتعبئة الحقول بالأعلى والتحديث.');
+            // لتبسيط الكود للمثال: يمكنك إضافة منطق التعديل هنا ليقوم بتحديث الـ Sheet
+        }
+
+        // تشغيل التحميل عند فتح الصفحة
+        loadData();
+    </script>
+</body>
+</html>
