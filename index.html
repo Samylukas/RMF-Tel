@@ -113,18 +113,23 @@
         .modal-content input { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: 'Cairo'; }
         .loading { text-align: center; padding: 20px; font-weight: bold; color: var(--primary-blue); }
 
+        /* فوتر الطباعة المخصص */
+        .print-footer {
+            display: none;
+        }
+
         /* ==================== إعدادات الطباعة النظيفة ==================== */
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 0mm 10mm 12mm 10mm; /* الهامش العلوي 0 يزيل الهيدر المزعج من أجهزة الطباعة */
+                margin: 12mm 10mm 20mm 10mm; /* إعطاء هامش سفلي كافٍ للفوتر المخصص (20mm) */
             }
             body {
                 background: white !important;
                 color: black !important;
                 font-size: 11pt;
                 font-family: 'Cairo', sans-serif !important;
-                padding-top: 10px !important;
+                padding-top: 0 !important;
             }
             #splash-screen, .controls-bar, .action-cell, .btn-icon, .modal {
                 display: none !important;
@@ -162,6 +167,9 @@
                 width: 100% !important;
                 border-collapse: collapse !important;
             }
+            thead {
+                display: table-header-group;
+            }
             th {
                 background-color: var(--light-gray) !important;
                 color: var(--primary-blue) !important;
@@ -191,6 +199,18 @@
                 break-after: avoid !important;
                 font-family: 'Cairo', sans-serif !important;
             }
+
+            /* تثبيت التاريخ والوقت بأسفل الصفحة المطبوعة على اليمين */
+            .print-footer {
+                display: block !important;
+                position: fixed;
+                bottom: -15mm;
+                right: 0;
+                font-size: 9pt;
+                color: #444;
+                font-family: 'Cairo', sans-serif;
+                direction: ltr;
+            }
         }
     </style>
 </head>
@@ -209,7 +229,7 @@
 
     <div class="container">
         <div class="controls-bar">
-            <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> طباعة الدليل</button>
+            <button class="btn btn-print" onclick="printPage()"><i class="fas fa-print"></i> طباعة الدليل</button>
             <button class="btn btn-add" id="add-btn" onclick="openModal()"><i class="fas fa-plus"></i> إضافة رقم جديد</button>
             <button class="btn btn-exit-admin" id="exit-admin-btn" onclick="exitAdminMode()"><i class="fas fa-sign-out-alt"></i> إنهاء التعديل</button>
             
@@ -238,6 +258,9 @@
             </table>
         </div>
     </div>
+
+    <!-- فوتر مخصص يظهر فيه التاريخ والوقت عند الطباعة -->
+    <div class="print-footer" id="print-date-footer"></div>
 
     <div class="modal" id="admin-modal">
         <div class="modal-content">
@@ -270,6 +293,20 @@
             }, 2500);
             loadData();
         };
+
+        // دالة الطباعة: حساب الوقت والتاريخ لحظياً بنظام 24 ساعة بدون كلمات زائدة
+        function printPage() {
+            let now = new Date();
+            let day = String(now.getDate()).padStart(2, '0');
+            let month = String(now.getMonth() + 1).padStart(2, '0');
+            let year = now.getFullYear();
+            let hours = String(now.getHours()).padStart(2, '0');
+            let minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            let formattedDateTime = `${day}/${month}/${year} ${hours}:${minutes}`;
+            document.getElementById('print-date-footer').innerText = formattedDateTime;
+            window.print();
+        }
 
         let clicks = 0;
         let clickTimer;
