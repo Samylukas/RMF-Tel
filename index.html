@@ -113,23 +113,20 @@
         .modal-content input { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: 'Cairo'; }
         .loading { text-align: center; padding: 20px; font-weight: bold; color: var(--primary-blue); }
 
-        /* فوتر الطباعة المخصص */
-        .print-footer {
-            display: none;
-        }
+        /* العناصر الخاصة بالطباعة فقط */
+        .print-footer { display: none; }
 
-        /* ==================== إعدادات الطباعة بدون الهيدر العلوي ==================== */
+        /* ==================== إعدادات الطباعة الدقيقة ==================== */
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 0mm 10mm 12mm 10mm; /* الهامش العلوي 0 لإخفاء هيدر المتصفح */
+                margin: 10mm 10mm 20mm 10mm; /* مساحة عريضة في الأسفل للفوتر لمنع التداخل */
             }
             body {
                 background: white !important;
                 color: black !important;
                 font-size: 11pt;
                 font-family: 'Cairo', sans-serif !important;
-                padding-top: 10px !important;
             }
             #splash-screen, .controls-bar, .action-cell, .btn-icon, .modal {
                 display: none !important;
@@ -141,13 +138,12 @@
                 border-bottom: 1px solid var(--primary-blue) !important;
                 padding-bottom: 10px !important;
                 margin-bottom: 15px !important;
-                margin-top: 0 !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
             .center-logo {
                 display: block !important;
-                height: 70px !important;
+                height: 65px !important;
                 margin: 0 auto !important;
             }
             .sub-title {
@@ -167,6 +163,7 @@
             table {
                 width: 100% !important;
                 border-collapse: collapse !important;
+                margin-bottom: 15mm !important;
             }
             th {
                 background-color: var(--light-gray) !important;
@@ -197,19 +194,22 @@
                 break-after: avoid !important;
                 font-family: 'Cairo', sans-serif !important;
             }
+
+            /* الفوتر المخصص أسفل الورقة */
             .print-footer {
-                display: flex !important;
-                justify-content: flex-start;
+                display: block !important;
                 position: fixed;
-                bottom: 0;
+                bottom: -10mm;
                 right: 0;
                 left: 0;
+                width: 100%;
                 font-size: 9pt;
                 color: #333;
                 font-family: 'Cairo', sans-serif;
-                border-top: 1px solid #ddd;
-                padding-top: 4px;
-                direction: rtl;
+                border-top: 1px solid #ccc;
+                padding-top: 5px;
+                background: white;
+                text-align: right;
             }
         }
     </style>
@@ -259,7 +259,7 @@
         </div>
     </div>
 
-    <!-- فوتر للجهة اليمنى فقط يظهر التاريخ والوقت -->
+    <!-- الفوتر المخصص للطباعة -->
     <div class="print-footer" id="print-date-footer"></div>
 
     <div class="modal" id="admin-modal">
@@ -294,7 +294,6 @@
             loadData();
         };
 
-        // دالة الطباعة: توليد التاريخ والوقت بتنسيق DD/MM/YYYY HH:mm فقط بدون كلمات إضافية
         function printPage() {
             let now = new Date();
             let day = String(now.getDate()).padStart(2, '0');
