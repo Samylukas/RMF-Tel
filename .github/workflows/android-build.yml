@@ -25,11 +25,14 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Dependencies and Capacitor
+      - name: Prepare Web Assets & Install Capacitor
         run: |
+          mkdir -p www
+          cp index.html www/
+          cp -r Airportlogo www/ 2>/dev/null || true
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android
-          npx cap init "Airport Directory" "com.airport.directory" --web-dir "."
+          npx cap init "Airport Directory" "com.airport.directory" --web-dir "www"
 
       - name: Add Android Platform
         run: |
