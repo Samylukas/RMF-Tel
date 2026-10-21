@@ -2,7 +2,6 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <!-- تفعيل التزويم والتكبير/التصغير للمستخدم -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>دليل هاتف مطار مرسي علم الدولي</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
@@ -19,9 +18,7 @@
             --text-dark: #333; 
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body { 
             font-family: 'Cairo', sans-serif; 
@@ -32,7 +29,6 @@
             touch-action: manipulation;
         }
         
-        /* شاشة البداية (Splash Screen) متضمنة طائرةSVG أنيقة بدون انقطاع */
         #splash-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #00305B; z-index: 9999;
@@ -57,7 +53,6 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        /* الهيدر والعنوان */
         .top-header { 
             display: flex; 
             flex-direction: column;
@@ -91,7 +86,6 @@
             padding: 0 10px; 
         }
 
-        /* تجاوب عناصر التحكم مع الشاشات الصغيرة */
         .controls-bar { 
             display: flex; 
             flex-wrap: wrap; 
@@ -147,18 +141,17 @@
         .btn-add { background-color: var(--success-green); color: white; display: none; }
         .btn-exit-admin { background-color: var(--danger-red); color: white; display: none; }
 
-        /* حاوية الجدول المترابطة للشاشات المختلفة */
         .table-container { 
             background: white; 
             border-radius: 8px; 
             box-shadow: 0 0 10px rgba(0,0,0,0.05); 
-            overflow-x: auto; /* تمرير أفقي ممتاز على الموبايل */
+            overflow-x: auto; 
             -webkit-overflow-scrolling: touch;
         }
 
         table { 
             width: 100%; 
-            min-width: 600px; /* ضمان عدم انضغاط الأعمدة في الشاشات الصغيرة */
+            min-width: 650px; 
             border-collapse: collapse; 
             text-align: center; 
         }
@@ -173,7 +166,7 @@
         }
 
         td { 
-            padding: 10px 8px; 
+            padding: 8px 6px; 
             border: 1px solid var(--border-color); 
             font-size: 13px; 
             font-weight: 600; 
@@ -185,6 +178,45 @@
             color: var(--primary-blue); 
             font-weight: bold; 
             font-size: 15px; 
+        }
+
+        /* تنسيقات أزرار الاتصال والواتس */
+        .mobile-cell {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 5px;
+            direction: ltr;
+        }
+        
+        .mobile-number-text {
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .action-btn-call, .action-btn-wa {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            transition: transform 0.2s;
+        }
+
+        .action-btn-call { background-color: #28A745; }
+        .action-btn-wa { background-color: #25D366; }
+
+        .action-btn-call:active, .action-btn-wa:active {
+            transform: scale(1.15);
         }
 
         .action-cell { display: none; width: 80px; }
@@ -209,7 +241,7 @@
         @media print {
             @page { size: A4 portrait; margin: 15mm 10mm 15mm 10mm; }
             body { background: white !important; color: black !important; font-size: 11pt; }
-            #splash-screen, .controls-bar, .action-cell, .btn-icon, .modal { display: none !important; }
+            #splash-screen, .controls-bar, .action-cell, .btn-icon, .modal, .quick-actions { display: none !important; }
             .top-header { border-bottom: 1px solid var(--primary-blue) !important; margin-bottom: 10px !important; }
             table { width: 100% !important; min-width: 100% !important; border-collapse: collapse !important; }
             th { background-color: var(--light-gray) !important; color: var(--primary-blue) !important; border: 1px solid #aaa !important; }
@@ -220,13 +252,11 @@
 </head>
 <body>
 
-    <!-- شاشة البداية المحدثة باللوجو المضمون -->
     <div id="splash-screen">
         <i class="fas fa-plane-departure splash-icon"></i>
         <div class="splash-text">مطار مرسي علم الدولي</div>
     </div>
 
-    <!-- الهيدر والعنوان -->
     <div class="top-header">
         <i class="fas fa-plane-arrival header-logo-icon" id="secret-logo" title="الضغط 3 مرات للتعديل"></i>
         <h2 class="sub-title">دليل هاتف مطار مرسي علم الدولي</h2>
@@ -365,13 +395,34 @@
                 tbody.innerHTML += `<tr class="dept-row"><td colspan="6">${dept}</td></tr>`;
                 employees.forEach(emp => {
                     let empId = emp.ID || counter; 
+                    let mobileRaw = emp.Mobile ? emp.Mobile.replace(/\D/g, '') : '';
+                    
+                    // تحويل الرقم المصري للصيغة الدولية للواتساب
+                    let waNumber = mobileRaw;
+                    if(waNumber.startsWith('0')) {
+                        waNumber = '20' + waNumber.substring(1);
+                    }
+
+                    let mobileContent = '-';
+                    if (mobileRaw) {
+                        mobileContent = `
+                            <div class="mobile-cell">
+                                <span class="mobile-number-text">${emp.Mobile}</span>
+                                <div class="quick-actions">
+                                    <a href="tel:${mobileRaw}" class="action-btn-call" title="اتصال تلفوني"><i class="fas fa-phone-alt"></i></a>
+                                    <a href="https://wa.me/${waNumber}" target="_blank" class="action-btn-wa" title="مراسلة واتساب"><i class="fab fa-whatsapp"></i></a>
+                                </div>
+                            </div>
+                        `;
+                    }
+
                     tbody.innerHTML += `
                         <tr>
                             <td>${counter}</td>
                             <td>${emp.Name || ''}</td>
                             <td>${emp.Role || ''}</td>
                             <td style="color: var(--danger-red); font-weight: bold;">${emp.Ext || ''}</td>
-                            <td style="direction: ltr;">${emp.Mobile || ''}</td>
+                            <td>${mobileContent}</td>
                             <td class="action-cell">
                                 <div class="action-btns">
                                     <button class="btn-icon btn-edit" onclick="editRecord('${empId}')"><i class="fas fa-pen"></i></button>
