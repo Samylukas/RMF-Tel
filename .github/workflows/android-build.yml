@@ -23,7 +23,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '17'
 
       - name: Prepare Web Assets & Install Capacitor
         run: |
@@ -31,7 +31,7 @@ jobs:
           cp index.html www/
           cp -r Airportlogo www/ 2>/dev/null || true
           npm init -y
-          npm install @capacitor/core @capacitor/cli @capacitor/android
+          npm install @capacitor/core@5 @capacitor/cli@5 @capacitor/android@5
           npx cap init "Airport Directory" "com.airport.directory" --web-dir "www"
 
       - name: Add Android Platform
@@ -39,9 +39,14 @@ jobs:
           npx cap add android
           npx cap sync android
 
+      - name: Fix Kotlin Duplicate Classes Conflict
+        run: |
+          echo "android.enableJetifier=true" >> android/gradle.properties
+          echo "android.useAndroidX=true" >> android/gradle.properties
+
       - name: Build APK
         working-directory: android
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleDebug -PkotlinVersion=1.8.22
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
