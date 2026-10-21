@@ -1,55 +1,465 @@
-name: Build Android APK
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <!-- تفعيل التزويم والتكبير/التصغير للمستخدم -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>دليل هاتف مطار مرسي علم الدولي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root { 
+            --primary-blue: #00305B; 
+            --light-gray: #E5E7EB; 
+            --border-color: #D1D5DB; 
+            --success-green: #28A745; 
+            --danger-red: #DC3545; 
+            --warning-yellow: #FFC107; 
+            --text-dark: #333; 
+        }
 
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+        * {
+            box-sizing: border-box;
+        }
 
-jobs:
-  build-android:
-    runs-on: ubuntu-latest
+        body { 
+            font-family: 'Cairo', sans-serif; 
+            background-color: #F8F9FA; 
+            margin: 0; 
+            padding: 0; 
+            color: var(--text-dark); 
+            touch-action: manipulation;
+        }
+        
+        /* شاشة البداية (Splash Screen) متضمنة طائرةSVG أنيقة بدون انقطاع */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #00305B; z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease-out;
+            color: white;
+        }
+        .splash-icon {
+            font-size: 80px;
+            color: #FFC107;
+            animation: smokeEffect 2.2s forwards ease-in-out;
+        }
+        .splash-text {
+            margin-top: 15px;
+            font-size: 20px;
+            font-weight: 700;
+        }
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+        @keyframes smokeEffect {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+        /* الهيدر والعنوان */
+        .top-header { 
+            display: flex; 
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center; 
+            background: white; 
+            padding: 15px 10px; 
+            border-bottom: 2px solid var(--primary-blue); 
+        }
+        
+        .header-logo-icon {
+            font-size: 40px;
+            color: var(--primary-blue);
+            cursor: pointer;
+        }
 
-      - name: Setup Java JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
+        .sub-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-top: 5px;
+            margin-bottom: 0;
+            text-align: center;
+            font-family: 'Cairo', sans-serif;
+        }
 
-      - name: Prepare Web Assets & Install Capacitor
-        run: |
-          mkdir -p www
-          cp index.html www/
-          cp -r Airportlogo www/ 2>/dev/null || true
-          npm init -y
-          npm install @capacitor/core@5 @capacitor/cli@5 @capacitor/android@5
-          npx cap init "Airport Directory" "com.airport.directory" --web-dir "www"
+        .container { 
+            width: 100%; 
+            max-width: 1200px; 
+            margin: 15px auto; 
+            padding: 0 10px; 
+        }
 
-      - name: Add Android Platform
-        run: |
-          npx cap add android
-          npx cap sync android
+        /* تجاوب عناصر التحكم مع الشاشات الصغيرة */
+        .controls-bar { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: space-between; 
+            margin-bottom: 15px; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        
+        .controls-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
 
-      - name: Fix Kotlin Duplicate Classes Conflict
-        run: |
-          echo "android.enableJetifier=true" >> android/gradle.properties
-          echo "android.useAndroidX=true" >> android/gradle.properties
+        .search-box { 
+            flex-grow: 1; 
+            position: relative; 
+            width: 100%;
+        }
 
-      - name: Build APK
-        working-directory: android
-        run: ./gradlew assembleDebug -PkotlinVersion=1.8.22
+        .search-box input { 
+            width: 100%; 
+            padding: 10px 35px 10px 35px; 
+            border: 1px solid var(--primary-blue); 
+            border-radius: 8px; 
+            font-family: 'Cairo'; 
+            font-size: 15px; 
+            box-sizing: border-box; 
+        }
 
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-debug.apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+        .search-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--primary-blue); }
+        .clear-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #999; cursor: pointer; display: none; font-size: 16px; }
+
+        .btn { 
+            padding: 8px 15px; 
+            border: none; 
+            border-radius: 5px; 
+            font-family: 'Cairo'; 
+            font-weight: bold; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            font-size: 14px; 
+            white-space: nowrap; 
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-print { background-color: var(--primary-blue); color: white; }
+        .btn-add { background-color: var(--success-green); color: white; display: none; }
+        .btn-exit-admin { background-color: var(--danger-red); color: white; display: none; }
+
+        /* حاوية الجدول المترابطة للشاشات المختلفة */
+        .table-container { 
+            background: white; 
+            border-radius: 8px; 
+            box-shadow: 0 0 10px rgba(0,0,0,0.05); 
+            overflow-x: auto; /* تمرير أفقي ممتاز على الموبايل */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table { 
+            width: 100%; 
+            min-width: 600px; /* ضمان عدم انضغاط الأعمدة في الشاشات الصغيرة */
+            border-collapse: collapse; 
+            text-align: center; 
+        }
+        
+        th { 
+            background-color: var(--light-gray); 
+            color: var(--primary-blue); 
+            padding: 10px 8px; 
+            font-size: 14px; 
+            border: 1px solid var(--border-color); 
+            font-weight: 700;
+        }
+
+        td { 
+            padding: 10px 8px; 
+            border: 1px solid var(--border-color); 
+            font-size: 13px; 
+            font-weight: 600; 
+            color: var(--text-dark); 
+        }
+        
+        .dept-row { 
+            background-color: #F3F4F6; 
+            color: var(--primary-blue); 
+            font-weight: bold; 
+            font-size: 15px; 
+        }
+
+        .action-cell { display: none; width: 80px; }
+        .action-btns { display: flex; justify-content: center; gap: 4px; }
+        .btn-icon { padding: 5px 8px; border: none; border-radius: 4px; color: white; cursor: pointer; font-size: 12px; }
+        .btn-edit { background-color: var(--warning-yellow); color: #000; }
+        .btn-delete { background-color: var(--danger-red); }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; padding: 15px; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 100%; max-width: 400px; }
+        .modal-content input { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: 'Cairo'; }
+        
+        #emp-mobile {
+            direction: ltr !important;
+            text-align: right !important;
+            font-family: monospace, 'Cairo';
+            font-size: 15px;
+        }
+
+        .loading { text-align: center; padding: 20px; font-weight: bold; color: var(--primary-blue); }
+
+        @media print {
+            @page { size: A4 portrait; margin: 15mm 10mm 15mm 10mm; }
+            body { background: white !important; color: black !important; font-size: 11pt; }
+            #splash-screen, .controls-bar, .action-cell, .btn-icon, .modal { display: none !important; }
+            .top-header { border-bottom: 1px solid var(--primary-blue) !important; margin-bottom: 10px !important; }
+            table { width: 100% !important; min-width: 100% !important; border-collapse: collapse !important; }
+            th { background-color: var(--light-gray) !important; color: var(--primary-blue) !important; border: 1px solid #aaa !important; }
+            td { border: 1px solid #ccc !important; }
+            tr { page-break-inside: avoid !important; break-inside: avoid !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- شاشة البداية المحدثة باللوجو المضمون -->
+    <div id="splash-screen">
+        <i class="fas fa-plane-departure splash-icon"></i>
+        <div class="splash-text">مطار مرسي علم الدولي</div>
+    </div>
+
+    <!-- الهيدر والعنوان -->
+    <div class="top-header">
+        <i class="fas fa-plane-arrival header-logo-icon" id="secret-logo" title="الضغط 3 مرات للتعديل"></i>
+        <h2 class="sub-title">دليل هاتف مطار مرسي علم الدولي</h2>
+    </div>
+
+    <div class="container">
+        <div class="controls-bar">
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="search-input" placeholder="ابحث بالاسم، الوظيفة، الإدارة..." oninput="filterTable()">
+                <i class="fas fa-times clear-icon" id="clear-search-btn" onclick="clearSearch()" title="مسح البحث"></i>
+            </div>
+            
+            <div class="controls-buttons">
+                <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> طباعة</button>
+                <button class="btn btn-add" id="add-btn" onclick="openModal()"><i class="fas fa-plus"></i> إضافة</button>
+                <button class="btn btn-exit-admin" id="exit-admin-btn" onclick="exitAdminMode()"><i class="fas fa-sign-out-alt"></i> إنهاء</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="directory-table">
+                <thead>
+                    <tr>
+                        <th style="width: 40px;">م</th>
+                        <th>الإسم</th>
+                        <th>الوظيفة</th>
+                        <th>رقم أرضي</th>
+                        <th>موبايل</th>
+                        <th class="action-cell">إجراء</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <tr><td colspan="6" class="loading">جاري تحميل البيانات...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal" id="admin-modal">
+        <div class="modal-content">
+            <h3 id="modal-title" style="color: var(--primary-blue); border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-top: 0;">إضافة رقم جديد</h3>
+            <input type="hidden" id="emp-id">
+            <input type="text" id="emp-dept" placeholder="الإدارة">
+            <input type="text" id="emp-name" placeholder="الإسم">
+            <input type="text" id="emp-role" placeholder="الوظيفة">
+            <input type="text" id="emp-ext" placeholder="الرقم الأرضي">
+            <input type="text" id="emp-mobile" placeholder="الموبايل (مثال: 0100 000 0000)" oninput="formatMobileInput(this)" maxlength="13">
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-add" style="display:block;" onclick="saveRecord()">حفظ</button>
+                <button class="btn btn-print" style="background:#6c757d;" onclick="closeModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwb6SSVOS6nUk9sq5o7dK2QIn3sVDAXZWXt_6wpGW1tvTUYdjSUAlUm5IIqNGBFrTOZcg/exec'; 
+        
+        let isAdmin = false;
+        let adminPassword = "";
+        let directoryData = [];
+
+        window.onload = () => {
+            setTimeout(() => {
+                let splash = document.getElementById('splash-screen');
+                splash.style.opacity = '0';
+                setTimeout(() => { splash.style.display = 'none'; }, 500); 
+            }, 2000);
+            loadData();
+        };
+
+        function formatMobileInput(input) {
+            let value = input.value.replace(/\D/g, ''); 
+            if (value.length > 11) value = value.substring(0, 11);
+            let formatted = '';
+            if (value.length > 0) {
+                formatted = value.substring(0, 4);
+                if (value.length > 4) formatted += ' ' + value.substring(4, 7);
+                if (value.length > 7) formatted += ' ' + value.substring(7, 11);
+            }
+            input.value = formatted;
+        }
+
+        let clicks = 0;
+        let clickTimer;
+        document.getElementById('secret-logo').addEventListener('click', () => {
+            clicks++;
+            clearTimeout(clickTimer);
+            clickTimer = setTimeout(() => { clicks = 0; }, 1500); 
+            if (clicks === 3) {
+                if(isAdmin) { alert("أنت بالفعل في وضع التعديل!"); clicks = 0; return; }
+                let pwd = prompt("أدخل الرقم السري:");
+                if (pwd === "102030") {
+                    adminPassword = pwd;
+                    isAdmin = true;
+                    document.getElementById('add-btn').style.display = 'flex';
+                    document.getElementById('exit-admin-btn').style.display = 'flex';
+                    document.querySelectorAll('.action-cell').forEach(cell => cell.style.display = 'table-cell');
+                }
+                clicks = 0;
+            }
+        });
+
+        function exitAdminMode() {
+            isAdmin = false;
+            adminPassword = "";
+            document.getElementById('add-btn').style.display = 'none';
+            document.getElementById('exit-admin-btn').style.display = 'none';
+            document.querySelectorAll('.action-cell').forEach(cell => cell.style.display = 'none');
+        }
+
+        async function loadData() {
+            try {
+                let response = await fetch(API_URL);
+                directoryData = await response.json();
+                renderTable(directoryData);
+            } catch (error) {
+                document.getElementById('table-body').innerHTML = '<tr><td colspan="6" style="color:red; text-align:center;">تعذر الاتصال بقاعدة البيانات.</td></tr>';
+            }
+        }
+
+        function renderTable(data) {
+            let tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            if(data.length === 0) return tbody.innerHTML = '<tr><td colspan="6">لا توجد بيانات</td></tr>';
+
+            let groupedData = {};
+            data.forEach(row => {
+                let dept = row.Department || 'إدارات أخرى';
+                if (!groupedData[dept]) groupedData[dept] = [];
+                groupedData[dept].push(row);
+            });
+
+            let counter = 1;
+            for (const [dept, employees] of Object.entries(groupedData)) {
+                tbody.innerHTML += `<tr class="dept-row"><td colspan="6">${dept}</td></tr>`;
+                employees.forEach(emp => {
+                    let empId = emp.ID || counter; 
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${counter}</td>
+                            <td>${emp.Name || ''}</td>
+                            <td>${emp.Role || ''}</td>
+                            <td style="color: var(--danger-red); font-weight: bold;">${emp.Ext || ''}</td>
+                            <td style="direction: ltr;">${emp.Mobile || ''}</td>
+                            <td class="action-cell">
+                                <div class="action-btns">
+                                    <button class="btn-icon btn-edit" onclick="editRecord('${empId}')"><i class="fas fa-pen"></i></button>
+                                    <button class="btn-icon btn-delete" onclick="deleteRecord('${empId}')"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    counter++;
+                });
+            }
+            if(isAdmin) {
+                document.querySelectorAll('.action-cell').forEach(cell => cell.style.display = 'table-cell');
+            }
+        }
+
+        function filterTable() {
+            let input = document.getElementById("search-input").value.toLowerCase();
+            document.getElementById("clear-search-btn").style.display = input.length > 0 ? "block" : "none";
+
+            let filteredData = directoryData.filter(row => 
+                (row.Name && row.Name.toLowerCase().includes(input)) ||
+                (row.Role && row.Role.toLowerCase().includes(input)) ||
+                (row.Department && row.Department.toLowerCase().includes(input)) ||
+                (row.Ext && row.Ext.toString().includes(input)) ||
+                (row.Mobile && row.Mobile.toString().includes(input))
+            );
+            renderTable(filteredData);
+        }
+
+        function clearSearch() {
+            let searchInput = document.getElementById("search-input");
+            searchInput.value = ""; 
+            searchInput.focus(); 
+            filterTable(); 
+        }
+
+        function openModal(id = null) {
+            document.getElementById('admin-modal').style.display = 'flex';
+            if (id) {
+                document.getElementById('modal-title').innerText = 'تعديل بيانات الموظف';
+                let emp = directoryData.find(e => e.ID == id);
+                if(emp) {
+                    document.getElementById('emp-id').value = emp.ID;
+                    document.getElementById('emp-dept').value = emp.Department || '';
+                    document.getElementById('emp-name').value = emp.Name || '';
+                    document.getElementById('emp-role').value = emp.Role || '';
+                    document.getElementById('emp-ext').value = emp.Ext || '';
+                    
+                    let mobileInput = document.getElementById('emp-mobile');
+                    mobileInput.value = emp.Mobile || '';
+                    formatMobileInput(mobileInput);
+                }
+            } else {
+                document.getElementById('modal-title').innerText = 'إضافة رقم جديد';
+                document.getElementById('emp-id').value = 'DIR-' + (directoryData.length + 1);
+                document.querySelectorAll('.modal-content input[type="text"]').forEach(i => i.value = '');
+            }
+        }
+
+        function closeModal() { document.getElementById('admin-modal').style.display = 'none'; }
+
+        async function saveRecord() {
+            let id = document.getElementById('emp-id').value;
+            let payload = {
+                password: adminPassword,
+                action: directoryData.some(e => e.ID == id) ? 'edit' : 'add',
+                id: id, 
+                department: document.getElementById('emp-dept').value,
+                name: document.getElementById('emp-name').value, 
+                role: document.getElementById('emp-role').value,
+                ext: document.getElementById('emp-ext').value, 
+                mobile: document.getElementById('emp-mobile').value
+            };
+            closeModal();
+            document.getElementById('table-body').innerHTML = '<tr><td colspan="6" class="loading">جاري الحفظ...</td></tr>';
+            await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'text/plain;charset=utf-8' } });
+            loadData();
+        }
+
+        function editRecord(id) { openModal(id); }
+        async function deleteRecord(id) {
+            if(confirm('تأكيد الحذف؟')) {
+                document.getElementById('table-body').innerHTML = '<tr><td colspan="6" class="loading">جاري الحذف...</td></tr>';
+                await fetch(API_URL, { method: 'POST', body: JSON.stringify({ password: adminPassword, action: 'delete', id: id }), headers: { 'Content-Type': 'text/plain;charset=utf-8' } });
+                loadData();
+            }
+        }
+    </script>
+</body>
+</html>
