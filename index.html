@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title></title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>دليل هاتف مطار مرسي علم الدولي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -175,12 +175,15 @@
             line-height: 1.2;
         }
         
+        /* تنسيق رءوس الإدارات الجديد (أكبر، أزرق غامق، عريض جداً) */
         .dept-row { 
-            background-color: #F3F4F6; 
-            color: var(--primary-blue); 
-            font-weight: bold; 
-            font-size: 13px; 
-            padding: 5px !important;
+            background-color: #E5E7EB !important; 
+        }
+        .dept-row td {
+            color: var(--primary-blue) !important; 
+            font-weight: 900 !important; 
+            font-size: 17px !important; 
+            padding: 10px !important;
         }
 
         /* أزرار الاتصال والواتساب */
@@ -216,7 +219,6 @@
             font-size: 10px;
         }
 
-        /* تعديل لون زر الاتصال ليكون أزرق */
         .action-btn-call { background-color: var(--primary-blue); } 
         .action-btn-wa { background-color: #25D366; }
 
@@ -258,13 +260,19 @@
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 12mm 8mm 12mm 8mm;
+                /* إخفاء الهيدر الافتراضي للمتصفح بالكامل من خلال تصفير الهامش العلوي */
+                margin-top: 0mm; 
+                margin-bottom: 12mm; 
+                margin-left: 8mm;
+                margin-right: 8mm;
             }
             body {
                 background: white !important;
                 color: black !important;
                 font-size: 10pt;
                 font-family: 'Cairo', sans-serif !important;
+                /* تعويض الهامش العلوي للمحتوى بعد إخفاء هيدر المتصفح */
+                padding-top: 15mm !important; 
             }
             #splash-screen, .controls-bar, .action-cell, .btn-icon, .modal, .quick-actions, .status-container {
                 display: none !important;
@@ -310,13 +318,20 @@
                 border: 1px solid #ccc !important;
             }
             tr { page-break-inside: avoid !important; break-inside: avoid !important; }
+            
+            /* تنسيق رءوس الإدارات في الطباعة */
             .dept-row {
-                background-color: #F3F4F6 !important;
-                color: var(--primary-blue) !important;
+                background-color: #E5E7EB !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
                 page-break-after: avoid !important;
                 break-after: avoid !important;
+            }
+            .dept-row td {
+                color: var(--primary-blue) !important;
+                font-weight: 900 !important;
+                font-size: 13pt !important; /* حجم أكبر في الطباعة */
+                padding: 6px !important;
             }
         }
     </style>
@@ -397,7 +412,6 @@
         let adminPassword = "";
         let directoryData = [];
 
-        // إدارة حالة الاتصال بالإنترنت
         function updateConnectionStatus() {
             const statusDot = document.getElementById('status-dot');
             const statusText = document.getElementById('status-text');
@@ -467,11 +481,9 @@
             document.querySelectorAll('.action-cell').forEach(cell => cell.style.display = 'none');
         }
 
-        // دالة جلب البيانات مع دعم الكاش (الأوفلاين)
         async function loadData(isRefresh = false) {
             let cachedData = localStorage.getItem(CACHE_KEY);
             
-            // لو أول مرة يفتح الصفحة أو مش بنعمل تحديث إجباري، نعرض الكاش فوراً
             if (cachedData && !isRefresh && directoryData.length === 0) {
                 directoryData = JSON.parse(cachedData);
                 renderTable(directoryData);
@@ -491,7 +503,7 @@
                 let response = await fetch(API_URL);
                 let freshData = await response.json();
                 directoryData = freshData;
-                localStorage.setItem(CACHE_KEY, JSON.stringify(freshData)); // تحديث الكاش
+                localStorage.setItem(CACHE_KEY, JSON.stringify(freshData));
                 renderTable(directoryData);
             } catch (error) {
                 if (!cachedData) {
@@ -503,7 +515,6 @@
             }
         }
 
-        // دالة مخصصة لزر التحديث
         function forceRefreshData() {
             loadData(true);
         }
@@ -626,7 +637,7 @@
             closeModal();
             document.getElementById('table-body').innerHTML = '<tr><td colspan="6" class="loading">جاري الحفظ والمزامنة...</td></tr>';
             await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'text/plain;charset=utf-8' } });
-            forceRefreshData(); // جلب البيانات الجديدة وتحديث الكاش
+            forceRefreshData(); 
         }
 
         function editRecord(id) { openModal(id); }
