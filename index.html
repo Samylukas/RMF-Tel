@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title> </title>
+    <title>دليل هاتف مطار مرسي علم الدولي</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -15,6 +15,7 @@
             --success-green: #28A745; 
             --danger-red: #DC3545; 
             --warning-yellow: #FFC107; 
+            --info-cyan: #17a2b8;
             --text-dark: #333; 
         }
 
@@ -29,7 +30,7 @@
             overflow-x: hidden;
         }
         
-        /* شاشة البداية باللوجو الأصلي */
+        /* شاشة البداية */
         #splash-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #ffffff; z-index: 9999;
@@ -76,6 +77,23 @@
 
         .container { max-width: 1200px; margin: 12px auto; padding: 0 8px; }
         
+        /* حالة الاتصال بالإنترنت */
+        .status-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--success-green);
+        }
+
         /* عناصر التحكم */
         .controls-bar { 
             display: flex; 
@@ -99,6 +117,12 @@
         .search-icon { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--primary-blue); font-size: 13px; }
         .clear-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #999; cursor: pointer; display: none; font-size: 14px; }
 
+        .controls-buttons {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
         .btn { 
             padding: 7px 12px; 
             border: none; 
@@ -113,10 +137,11 @@
             white-space: nowrap; 
         }
         .btn-print { background-color: var(--primary-blue); color: white; }
+        .btn-refresh { background-color: var(--info-cyan); color: white; }
         .btn-add { background-color: var(--success-green); color: white; display: none; }
         .btn-exit-admin { background-color: var(--danger-red); color: white; display: none; }
 
-        /* تصغير خلايا الجدول واستغلال المساحات */
+        /* الجدول */
         .table-container { 
             background: white; 
             border-radius: 6px; 
@@ -158,7 +183,7 @@
             padding: 5px !important;
         }
 
-        /* تصغير وإحكام أزرار الاتصال والواتساب */
+        /* أزرار الاتصال والواتساب */
         .mobile-cell {
             display: flex;
             align-items: center;
@@ -191,7 +216,8 @@
             font-size: 10px;
         }
 
-        .action-btn-call { background-color: #007BFF; }
+        /* تعديل لون زر الاتصال ليكون أزرق */
+        .action-btn-call { background-color: var(--primary-blue); } 
         .action-btn-wa { background-color: #25D366; }
 
         .action-cell { display: none; width: 70px; }
@@ -216,11 +242,14 @@
         /* الشاشات الصغيرة جداً */
         @media (max-width: 600px) {
             .controls-bar {
-                flex-direction: column-reverse;
+                flex-direction: column;
                 align-items: stretch;
             }
-            .btn-print {
-                width: 100%;
+            .controls-buttons {
+                justify-content: space-between;
+            }
+            .btn {
+                flex: 1;
                 justify-content: center;
             }
         }
@@ -237,7 +266,7 @@
                 font-size: 10pt;
                 font-family: 'Cairo', sans-serif !important;
             }
-            #splash-screen, .controls-bar, .action-cell, .btn-icon, .modal, .quick-actions {
+            #splash-screen, .controls-bar, .action-cell, .btn-icon, .modal, .quick-actions, .status-container {
                 display: none !important;
             }
             .top-header {
@@ -294,27 +323,34 @@
 </head>
 <body>
 
-    <!-- شاشة البداية -->
     <div id="splash-screen">
         <img src="Airportlogo.png" alt="Splash Logo" class="splash-logo">
     </div>
 
-    <!-- الهيدر والعنوان -->
     <div class="top-header">
         <img src="Airportlogo.png" alt="Marsa Alam Logo" class="center-logo" id="secret-logo" title="الضغط 3 مرات للتعديل">
         <h2 class="sub-title">دليل هاتف مطار مرسي علم الدولي</h2>
     </div>
 
     <div class="container">
+        <!-- حالة الاتصال بالإنترنت -->
+        <div class="status-container" id="connection-status">
+            <span class="status-dot" id="status-dot"></span>
+            <span id="status-text" style="color: var(--success-green);">متصل</span>
+        </div>
+
         <div class="controls-bar">
-            <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> طباعة الدليل</button>
-            <button class="btn btn-add" id="add-btn" onclick="openModal()"><i class="fas fa-plus"></i> إضافة رقم جديد</button>
-            <button class="btn btn-exit-admin" id="exit-admin-btn" onclick="exitAdminMode()"><i class="fas fa-sign-out-alt"></i> إنهاء التعديل</button>
-            
             <div class="search-box">
                 <i class="fas fa-search search-icon"></i>
                 <input type="text" id="search-input" placeholder="ابحث بالاسم، الوظيفة، الإدارة..." oninput="filterTable()">
                 <i class="fas fa-times clear-icon" id="clear-search-btn" onclick="clearSearch()" title="مسح البحث"></i>
+            </div>
+            
+            <div class="controls-buttons">
+                <button class="btn btn-refresh" onclick="forceRefreshData()"><i class="fas fa-sync-alt"></i> تحديث</button>
+                <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> طباعة</button>
+                <button class="btn btn-add" id="add-btn" onclick="openModal()"><i class="fas fa-plus"></i> إضافة</button>
+                <button class="btn btn-exit-admin" id="exit-admin-btn" onclick="exitAdminMode()"><i class="fas fa-sign-out-alt"></i> إنهاء</button>
             </div>
         </div>
 
@@ -355,12 +391,32 @@
 
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbwb6SSVOS6nUk9sq5o7dK2QIn3sVDAXZWXt_6wpGW1tvTUYdjSUAlUm5IIqNGBFrTOZcg/exec'; 
+        const CACHE_KEY = 'airport_directory_cache';
         
         let isAdmin = false;
         let adminPassword = "";
         let directoryData = [];
 
+        // إدارة حالة الاتصال بالإنترنت
+        function updateConnectionStatus() {
+            const statusDot = document.getElementById('status-dot');
+            const statusText = document.getElementById('status-text');
+            if (navigator.onLine) {
+                statusDot.style.backgroundColor = 'var(--success-green)';
+                statusText.style.color = 'var(--success-green)';
+                statusText.innerText = 'متصل (Online)';
+            } else {
+                statusDot.style.backgroundColor = 'var(--danger-red)';
+                statusText.style.color = 'var(--danger-red)';
+                statusText.innerText = 'غير متصل (Offline)';
+            }
+        }
+
+        window.addEventListener('online', updateConnectionStatus);
+        window.addEventListener('offline', updateConnectionStatus);
+
         window.onload = () => {
+            updateConnectionStatus();
             setTimeout(() => {
                 let splash = document.getElementById('splash-screen');
                 splash.style.opacity = '0';
@@ -372,7 +428,6 @@
         function formatMobileInput(input) {
             let value = input.value.replace(/\D/g, ''); 
             if (value.length > 11) value = value.substring(0, 11);
-            
             let formatted = '';
             if (value.length > 0) {
                 formatted = value.substring(0, 4);
@@ -390,6 +445,8 @@
             clickTimer = setTimeout(() => { clicks = 0; }, 1500); 
             if (clicks === 3) {
                 if(isAdmin) { alert("أنت بالفعل في وضع التعديل!"); clicks = 0; return; }
+                if(!navigator.onLine) { alert("لا يمكن تفعيل وضع التعديل بدون إنترنت!"); clicks = 0; return; }
+                
                 let pwd = prompt("أدخل الرقم السري:");
                 if (pwd === "102030") {
                     adminPassword = pwd;
@@ -410,14 +467,45 @@
             document.querySelectorAll('.action-cell').forEach(cell => cell.style.display = 'none');
         }
 
-        async function loadData() {
+        // دالة جلب البيانات مع دعم الكاش (الأوفلاين)
+        async function loadData(isRefresh = false) {
+            let cachedData = localStorage.getItem(CACHE_KEY);
+            
+            // لو أول مرة يفتح الصفحة أو مش بنعمل تحديث إجباري، نعرض الكاش فوراً
+            if (cachedData && !isRefresh && directoryData.length === 0) {
+                directoryData = JSON.parse(cachedData);
+                renderTable(directoryData);
+            }
+
+            if (!navigator.onLine) {
+                if(isRefresh) alert("أنت غير متصل بالإنترنت. يرجى التحقق من الشبكة للمزامنة.");
+                else if(!cachedData) document.getElementById('table-body').innerHTML = '<tr><td colspan="6" style="color:red; text-align:center;">لا يوجد اتصال بالإنترنت ولا توجد بيانات محفوظة مسبقاً.</td></tr>';
+                return;
+            }
+
+            if (isRefresh) {
+                document.getElementById('table-body').innerHTML = '<tr><td colspan="6" class="loading">جاري مزامنة أحدث البيانات...</td></tr>';
+            }
+
             try {
                 let response = await fetch(API_URL);
-                directoryData = await response.json();
+                let freshData = await response.json();
+                directoryData = freshData;
+                localStorage.setItem(CACHE_KEY, JSON.stringify(freshData)); // تحديث الكاش
                 renderTable(directoryData);
             } catch (error) {
-                document.getElementById('table-body').innerHTML = '<tr><td colspan="6" style="color:red; text-align:center;">تعذر الاتصال بقاعدة البيانات.</td></tr>';
+                if (!cachedData) {
+                    document.getElementById('table-body').innerHTML = '<tr><td colspan="6" style="color:red; text-align:center;">تعذر الاتصال بقاعدة البيانات.</td></tr>';
+                } else if (isRefresh) {
+                    alert("حدث خطأ أثناء المزامنة. سيتم عرض البيانات المحفوظة.");
+                    renderTable(directoryData);
+                }
             }
+        }
+
+        // دالة مخصصة لزر التحديث
+        function forceRefreshData() {
+            loadData(true);
         }
 
         function renderTable(data) {
@@ -440,9 +528,7 @@
                     let mobileRaw = emp.Mobile ? emp.Mobile.replace(/\D/g, '') : '';
                     
                     let waNumber = mobileRaw;
-                    if(waNumber.startsWith('0')) {
-                        waNumber = '20' + waNumber.substring(1);
-                    }
+                    if(waNumber.startsWith('0')) waNumber = '20' + waNumber.substring(1);
 
                     let mobileContent = '-';
                     if (mobileRaw) {
@@ -475,9 +561,7 @@
                     counter++;
                 });
             }
-            if(isAdmin) {
-                document.querySelectorAll('.action-cell').forEach(cell => cell.style.display = 'table-cell');
-            }
+            if(isAdmin) document.querySelectorAll('.action-cell').forEach(cell => cell.style.display = 'table-cell');
         }
 
         function filterTable() {
@@ -512,7 +596,6 @@
                     document.getElementById('emp-name').value = emp.Name || '';
                     document.getElementById('emp-role').value = emp.Role || '';
                     document.getElementById('emp-ext').value = emp.Ext || '';
-                    
                     let mobileInput = document.getElementById('emp-mobile');
                     mobileInput.value = emp.Mobile || '';
                     formatMobileInput(mobileInput);
@@ -527,6 +610,8 @@
         function closeModal() { document.getElementById('admin-modal').style.display = 'none'; }
 
         async function saveRecord() {
+            if(!navigator.onLine) return alert("لا يمكنك إضافة أو تعديل بيانات وأنت غير متصل بالإنترنت!");
+
             let id = document.getElementById('emp-id').value;
             let payload = {
                 password: adminPassword,
@@ -539,17 +624,20 @@
                 mobile: document.getElementById('emp-mobile').value
             };
             closeModal();
-            document.getElementById('table-body').innerHTML = '<tr><td colspan="6" class="loading">جاري الحفظ...</td></tr>';
+            document.getElementById('table-body').innerHTML = '<tr><td colspan="6" class="loading">جاري الحفظ والمزامنة...</td></tr>';
             await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'text/plain;charset=utf-8' } });
-            loadData();
+            forceRefreshData(); // جلب البيانات الجديدة وتحديث الكاش
         }
 
         function editRecord(id) { openModal(id); }
+        
         async function deleteRecord(id) {
+            if(!navigator.onLine) return alert("لا يمكنك حذف بيانات وأنت غير متصل بالإنترنت!");
+
             if(confirm('تأكيد الحذف؟')) {
                 document.getElementById('table-body').innerHTML = '<tr><td colspan="6" class="loading">جاري الحذف...</td></tr>';
                 await fetch(API_URL, { method: 'POST', body: JSON.stringify({ password: adminPassword, action: 'delete', id: id }), headers: { 'Content-Type': 'text/plain;charset=utf-8' } });
-                loadData();
+                forceRefreshData();
             }
         }
     </script>
